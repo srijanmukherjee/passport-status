@@ -15,6 +15,9 @@
 #define ATTR_TARGET_FORM_ID "trackStatusForFileNoNew"
 #define INITIAL_CAPACITY 8
 #define JSON_INDENTATION 4
+#define EXPECTED_TABLE_COUNT 2
+#define MIN_TABLE_ROW_COUNT 4
+#define EXPECTED_TABLE_ROW_CELL_COUNT 2
 
 typedef struct {
     void **items;
@@ -194,8 +197,7 @@ void print_status(TidyDoc tdoc, TidyNode *nodes, size_t n) {
 
         size_t m = 0;
         TidyNode *cells = find_tags(nodes[i], "td", &m);
-        // TODO: extract expected number of elements
-        if (m != 2)
+        if (m != EXPECTED_TABLE_ROW_CELL_COUNT)
             goto loopend;
 
         // extract key
@@ -252,8 +254,7 @@ int extract_status(TidyDoc doc) {
     }
 
     TidyNode *tables = find_tags(form, "table", &n);
-    // TODO: extract expected number of elements
-    if (n != 2) {
+    if (n != EXPECTED_TABLE_COUNT) {
         fprintf(stderr,
                 "ERROR: website markup has changed, expected 2 <table>, "
                 "discovered %zu tags instead\n",
@@ -265,8 +266,7 @@ int extract_status(TidyDoc doc) {
     free(tables);
 
     TidyNode *rows = find_tags(table, "tr", &n);
-    // TODO: extract expected number of elements
-    if (n != 11) {
+    if (n < MIN_TABLE_ROW_COUNT) {
         fprintf(stderr,
                 "ERROR: website markup has changed, expected 11 <tr>, "
                 "discovered %zu tags instead\n",
